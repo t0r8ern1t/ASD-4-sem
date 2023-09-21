@@ -1,0 +1,94 @@
+# нахождение эйлерова цикла в неориентированном графе
+
+import math
+import copy
+
+def Graf_go():
+    arr = []
+    with open('input.txt', 'r') as f1:
+        for t in f1:
+            arr.append(t)
+    for i in range(len(arr)):
+        arr[i] = arr[i].split()
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            arr[i][j] = int(arr[i][j])
+    return arr
+
+def DFS(a, arr, discovered):
+    count = 1
+    discovered.append(a)
+    for i in range(len(arr[a])):
+        if arr[a][i] == 1:
+            if i not in discovered:
+                DFS(i, arr, discovered)
+    return discovered
+
+def Is_bridge(start, end, arr):
+    arr2 = copy.deepcopy(arr)
+    arr2[start][end], arr2[end][start] = 0, 0
+    discovered = DFS(start, arr2, [])
+
+    if end in discovered:
+        return False
+    return True
+
+def Edge_count(arr):
+    count = 0
+    for i in range(len(arr)):
+        for j in range(len(arr)):
+            if arr[i][j] == 1:
+                count += 1
+    return count
+
+def Get_back(arr, start):
+    print(*arr, sep="\n")
+    discovered = [start]
+    path = []
+    for i in range(len(arr)):
+        if arr[start][i] == 1:
+            if i == 0:
+                path.append([start, i])
+                print(1)
+                break
+            elif i not in discovered:
+                discovered.append(i)
+                arr[start][i], arr[i][start] = 0, 0
+                path.append([start, i])
+                start = i
+    return path
+
+def Edge_count(arr):
+    count = 0
+    for i in range(len(arr)):
+        for j in range(len(arr)):
+            if arr[i][j] == 1:
+                count += 1
+    return count
+
+def Fleury(arr, start, euler_cycle):
+    edges = Edge_count(arr)
+    #print(*arr, edges, sep='\n')
+    ver = len(arr)
+    #print(euler_cycle)
+    for i in range(len(arr)):
+        if i == 0:
+            if edges == 2:
+                arr[start][i], arr[i][start] = 0, 0
+                euler_cycle.append([start, i])
+                print(euler_cycle)
+                return
+        elif arr[start][i] == 1:
+            if Is_bridge(start, i, arr):
+                ver -= 1
+            count = len(DFS(start, arr, []))
+            if abs(count - ver) <= 2:
+                if Is_bridge(i, start, arr):
+                    ver -= 1
+            euler_cycle.append([start, i])
+            arr[start][i], arr[i][start] = 0, 0
+            edges -= 1
+            Fleury(arr, i, euler_cycle)
+
+arr = Graf_go()
+Fleury(arr, 0, [])

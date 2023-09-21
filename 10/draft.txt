@@ -1,0 +1,138 @@
+import math
+import copy
+
+def Graf_go():
+    arr = []
+    with open('input.txt', 'r') as f1:
+        for t in f1:
+            arr.append(t)
+    for i in range(len(arr)):
+        arr[i] = arr[i].split()
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            arr[i][j] = int(arr[i][j])
+    return arr
+
+def DFS(a, arr, discovered):
+    count = 1
+    discovered.append(a)
+    for i in range(len(arr[a])):
+        print(2)
+        if arr[a][i] == '1':
+            if i not in discovered:
+                x, y = DFS(i, arr, discovered)
+                count += x
+    print(discovered)
+    return count, discovered
+
+def Is_bridge(start, end, arr):
+    arr2 = copy.deepcopy(arr)
+    arr2[start][end], arr2[end][start] = 0, 0
+    count, discovered = DFS(start, arr2, [])
+
+    if end in discovered:
+        return False
+    return True
+
+def Edge_count(arr):
+    count = 0
+    for i in range(len(arr)):
+        for j in range(len(arr)):
+            if arr[i][j] == 1:
+                count += 1
+    return count
+
+def Fleury(arr, start, euler_cycle, visited):
+    n_edges = Edge_count(arr)
+    if len(visited) == len(arr):
+        return euler_cycle
+    elif len(euler_cycle) > 1:
+        if euler_cycle[0][0] == euler_cycle[len(euler_cycle)-1][1]:
+            print("Граф не является Эйлеровым")
+            return [0]
+    for i in range(len(arr)):
+        if arr[start][i] == 1 and i not in visited:
+            print(1)
+            if not Is_bridge(start, i, arr):
+                euler_cycle.append([start, i])
+                visited.append[i]
+                start = i
+                arr[start][i], arr[i][start] = 0, 0
+                print(euler_cycle)
+                euler_cycle = Fleury(arr, start, euler_cycle, visited)
+
+arr = Graf_go()
+Fleury(arr, 0, [[]], [])
+
+
+
+def Fleury(arr, start, euler_cycle):
+    edges = Edge_count(arr)
+    print(*arr,sep='\n',end='\n\n')
+    if len(euler_cycle) == edges:
+        discovered = DFS(start, arr, [])
+        if 0 in discovered:
+            path = Get_back(arr, start)
+            print(euler_cycle, path)
+            return
+    for i in range(len(arr)):
+        if arr[start][i] == 1:
+            if not Is_bridge(start, i, arr):
+                euler_cycle.append([start, i])
+                print(euler_cycle, start)
+                arr[start][i], arr[i][start] = 0, 0
+                start = i
+                Fleury(arr, start, euler_cycle)
+
+
+# sss
+
+def Graf_go():
+    arr = []
+    with open('input.txt', 'r') as f1:
+        for t in f1:
+            arr.append(t)
+    for i in range(len(arr)):
+        arr[i] = arr[i].split()
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            arr[i][j] = int(arr[i][j])
+    return arr
+
+path = []
+
+def dfs(a, arr, color):
+    color[a] = 1
+    for i in range(len(arr[a])):
+        if arr[a][i] == 1:
+            if color[i] == 0:
+                arr[a][i], arr[i][a] = 0, 0
+                path.append([a, i])
+                print(*color)
+                dfs(i, arr, color)
+            elif color[i] == 1:
+                if 0 not in color:
+                    return True
+                else:
+                    return False
+
+
+def Find_cycle(arr):
+    color = [0] * len(arr)
+    cycle_found = False
+    for i in range(len(arr)):
+        if color[i] == 0:
+            res = dfs(i, arr, color)
+    print(res, *color)
+    print(*path)
+
+
+Find_cycle(Graf_go())
+
+
+
+0 1 0 1 0
+1 0 1 1 1
+0 1 0 1 0
+1 1 1 0 1
+0 1 0 1 0
